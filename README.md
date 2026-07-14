@@ -1,13 +1,13 @@
-# Implementación de TDD en un sistema de gestión de préstamos
+# Implementación de TDD en un servicio de gestión de cuentas bancarias
 
-En el contexto de un sistema de gestión de préstamos para una institución financiera, debes aplicar TDD para mejorar la calidad del software. El sistema debe manejar solicitudes de préstamos, validar los datos de entrada, calcular la elegibilidad del préstamo y registrar la solicitud en la base de datos. Los actores involucrados son el solicitante del préstamo, el sistema de evaluación de riesgos y el registro de préstamos. El sistema debe garantizar la idempotencia del registro de la solicitud por número de operación y canal, asegurando que dos invocaciones con la misma clave produzcan un solo registro y devuelvan la misma respuesta dentro de 24 horas. Debes considerar modos de falla específicos como timeout del sistema de evaluación de riesgos superior a 2 segundos o respuestas 5xx del core bancario.
+En el contexto de un sistema de gestión de cuentas bancarias, debes implementar un servicio que maneje las operaciones de apertura, cierre y consulta de cuentas. El servicio interactúa con un repositorio de cuentas y un servicio de validación de identidad. Debes aplicar TDD para garantizar la calidad del software y seguir el ciclo rojo-verde-refactor. Los actores involucrados son el 'originador de créditos', el'motor antifraude' y el 'core bancario'. Las operaciones deben ser idempotentes con clave de operación y canal, y manejar adecuadamente los fallos del 'buró de riesgos' con timeouts superiores a 2 segundos.
 
 ## Informacion General
 
 | Campo | Valor |
 |-------|-------|
 | **Tema** | Mejora de la calidad del software mediante TDD y el ciclo rojo-verde-refactor |
-| **Nivel** | advanced-l1 |
+| **Nivel** | advanced-l2 |
 | **Tipo** | practical |
 | **Tiempo estimado** | 8 horas |
 
@@ -21,11 +21,11 @@ En el contexto de un sistema de gestión de préstamos para una institución fin
 
 **Instrucciones:**
 
-- Asegúrate de tener instalado para ejecutar el proyecto: JDK 17+, Maven 3.9+, IDE con soporte Java.
+- Asegúrate de tener instalado para ejecutar el proyecto: Un IDE o editor de código.
 - Copia todo el contenido del campo **Código Base** de este reto — incluyendo el texto de instrucciones que aparece al inicio.
 - Abre un asistente de IA (Claude en claude.ai, ChatGPT o Gemini — se recomienda Claude), pega el contenido copiado en el chat y envíalo.
 - El asistente analizará los archivos, corregirá errores y generará un archivo ZIP descargable. Descárgalo y extráelo en la carpeta donde quieras trabajar.
-- Ejecuta `mvn compile` en la raíz. Si no hay errores, estás listo.
+- Verifica que el proyecto arranca sin errores.
 
 **Entregable:** El proyecto compila/arranca sin errores.
 
@@ -38,82 +38,84 @@ En el contexto de un sistema de gestión de préstamos para una institución fin
 
 </details>
 
-### Fase 1: Configuración del entorno de pruebas
+### Fase 1: Definición de requisitos y pruebas unitarias
 
-**Objetivo:** Establecer un entorno de pruebas que permita aplicar TDD en el desarrollo del sistema de gestión de préstamos.
+**Objetivo:** Establecer los requisitos funcionales y no funcionales del servicio y escribir las primeras pruebas unitarias.
 
 **Tiempo estimado:** 2 horas
 
 **Instrucciones:**
 
-- Identificar las dependencias necesarias para aplicar TDD en el proyecto.
-- Configurar el entorno de pruebas para permitir la ejecución de pruebas unitarias y de integración.
+- Identificar los requisitos funcionales y no funcionales del servicio de gestión de cuentas.
+- Escribir pruebas unitarias para las operaciones de apertura, cierre y consulta de cuentas utilizando TDD.
 
-**Entregable:** Entorno de pruebas configurado y listo para la aplicación de TDD.
+**Entregable:** Pruebas unitarias escritas y requisitos funcionales y no funcionales documentados.
 
 <details>
 <summary>Pistas de conocimiento</summary>
 
-- Identificación de las herramientas y librerías necesarias para aplicar TDD en Java.
-- Configuración de un entorno de pruebas que permita la ejecución de pruebas unitarias y de integración.
+- Considera los diferentes estados que puede tener una cuenta bancaria.
+- Piensa en los posibles fallos y cómo manejarlos en las pruebas.
 
 </details>
 
-### Fase 2: Desarrollo de la funcionalidad de solicitud de préstamo
+### Fase 2: Implementación del servicio y refactorización
 
-**Objetivo:** Implementar la funcionalidad de solicitud de préstamo utilizando TDD, asegurando la validación de datos de entrada y el cálculo de la elegibilidad del préstamo.
+**Objetivo:** Implementar el servicio de gestión de cuentas y refactorizar el código para mejorar su calidad.
 
-**Tiempo estimado:** 3 horas
+**Tiempo estimado:** 4 horas
 
 **Instrucciones:**
 
-- Escribir pruebas unitarias para la validación de datos de entrada y el cálculo de la elegibilidad del préstamo.
-- Implementar la funcionalidad de solicitud de préstamo, asegurando que pase todas las pruebas unitarias.
+- Implementar el servicio de gestión de cuentas siguiendo el ciclo rojo-verde-refactor.
+- Refactorizar el código para mejorar su legibilidad, mantenibilidad y rendimiento.
 
-**Entregable:** Funcionalidad de solicitud de préstamo implementada y verificada mediante pruebas unitarias.
+**Entregable:** Servicio de gestión de cuentas implementado y refactorizado.
 
 <details>
 <summary>Pistas de conocimiento</summary>
 
-- Aplicación de TDD para escribir pruebas unitarias antes de implementar la funcionalidad.
-- Validación de datos de entrada y cálculo de la elegibilidad del préstamo.
+- Considera la idempotencia de las operaciones y cómo garantizarla.
+- Piensa en las posibles optimizaciones para mejorar el rendimiento del servicio.
 
 </details>
 
-### Fase 3: Integración con el sistema de evaluación de riesgos
+### Fase 3: Evaluación y documentación
 
-**Objetivo:** Integrar la funcionalidad de solicitud de préstamo con el sistema de evaluación de riesgos, asegurando la idempotencia del registro de la solicitud por número de operación y canal.
+**Objetivo:** Evaluar el servicio implementado y documentar el proceso de desarrollo.
 
-**Tiempo estimado:** 3 horas
+**Tiempo estimado:** 2 horas
 
 **Instrucciones:**
 
-- Escribir pruebas de integración para la interacción con el sistema de evaluación de riesgos.
-- Implementar la integración con el sistema de evaluación de riesgos, asegurando la idempotencia del registro de la solicitud por número de operación y canal.
+- Evaluar el servicio implementado para asegurar que cumple con los requisitos y es robusto ante diferentes escenarios.
+- Documentar el proceso de desarrollo utilizando TDD y el ciclo rojo-verde-refactor.
 
-**Entregable:** Integración con el sistema de evaluación de riesgos implementada y verificada mediante pruebas de integración.
+**Entregable:** Evaluación del servicio y documentación del proceso de desarrollo.
 
 <details>
 <summary>Pistas de conocimiento</summary>
 
-- Aplicación de TDD para escribir pruebas de integración antes de implementar la integración.
-- Garantía de la idempotencia del registro de la solicitud por número de operación y canal.
+- Considera los diferentes escenarios de prueba para evaluar el servicio.
+- Piensa en cómo documentar el proceso de desarrollo de manera clara y concisa.
 
 </details>
 
 ## Dimensiones Evaluadas
 
 - **queEs**: ¿Qué es TDD y cómo se aplica en el desarrollo de software?
-- **paraQueSirve**: ¿Para qué sirve aplicar TDD en el desarrollo de software?
-- **comoSeUsa**: ¿Cómo se usa TDD para escribir pruebas unitarias y de integración en Java?
-- **erroresComunes**: ¿Cuáles son los errores comunes al aplicar TDD en el desarrollo de software?
+- **paraQueSirve**: ¿Para qué sirve el ciclo rojo-verde-refactor en el desarrollo de software?
+- **comoSeUsa**: ¿Cómo se usa TDD para mejorar la calidad del software?
+- **erroresComunes**: ¿Cuáles son los errores comunes al aplicar TDD y cómo se pueden evitar?
 - **queDecisionesImplica**: ¿Qué decisiones implica la aplicación de TDD en el desarrollo de software?
 
 ## Criterios de Evaluacion
 
-- Configuración correcta del entorno de pruebas para aplicar TDD.
-- Implementación de la funcionalidad de solicitud de préstamo utilizando TDD.
-- Integración con el sistema de evaluación de riesgos asegurando la idempotencia del registro de la solicitud por número de operación y canal.
+- Implementación de pruebas unitarias utilizando TDD.
+- Aplicación del ciclo rojo-verde-refactor en la implementación del servicio.
+- Refactorización del código para mejorar su calidad.
+- Evaluación del servicio implementado para asegurar que cumple con los requisitos.
+- Documentación clara y concisa del proceso de desarrollo utilizando TDD y el ciclo rojo-verde-refactor.
 
 ---
 

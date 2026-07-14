@@ -123,225 +123,118 @@ El participante que recibirá este proyecto los debe encontrar y resolver él mi
 
 INPUT
 Aquí está la cadena con los archivos:
-// === ARCHIVO: src/main/java/com/pragma/loansystem/LoanApplication.java ===
-package com.pragma.loansystem;
+// === ARCHIVO: src/main/java/com/pragma/bank/BankAccountService.java ===
+package com.pragma.bank;
 
-import com.pragma.loansystem.LoanValidator;
-import com.pragma.loansystem.LoanEligibilityCalculator;
-import com.pragma.loansystem.LoanRegistry;
+import org.springframework.stereotype.Service;
 
-public class LoanApplication {
-    private final LoanValidator loanValidator;
-    private final LoanEligibilityCalculator loanEligibilityCalculator;
-    private final LoanRegistry loanRegistry;
+@Service
+public class BankAccountService {
+    private final BankAccountRepository bankAccountRepository;
+    private final IdentityValidationService identityValidationService;
 
-    public LoanApplication(LoanValidator loanValidator, LoanEligibilityCalculator loanEligibilityCalculator, LoanRegistry loanRegistry) {
-        this.loanValidator = loanValidator;
-        this.loanEligibilityCalculator = loanEligibilityCalculator;
-        this.loanRegistry = loanRegistry;
+    public BankAccountService(BankAccountRepository bankAccountRepository, IdentityValidationService identityValidationService) {
+        this.bankAccountRepository = bankAccountRepository;
+        this.identityValidationService = identityValidationService;
     }
 
-    public void applyLoan(LoanRequest loanRequest) {
-        loanValidator.validate(loanRequest);
-        boolean isEligible = loanEligibilityCalculator.calculateEligibility(loanRequest);
-        if (isEligible) {
-            loanRegistry.registerLoan(loanRequest);
-        }
+    public void openAccount(String accountNumber, String ownerIdentity) {
+        // Implementar la lógica para abrir una cuenta
     }
-}
 
-// === ARCHIVO: src/main/java/com/pragma/loansystem/LoanValidator.java ===
-package com.pragma.loansystem;
+    public void closeAccount(String accountNumber) {
+        // Implementar la lógica para cerrar una cuenta
+    }
 
-public class LoanValidator {
-    public void validate(LoanRequest loanRequest) {
-        // Implementar la lógica de validación de datos de entrada
+    public String getAccountDetails(String accountNumber) {
+        // Implementar la lógica para obtener los detalles de una cuenta
+        return "";
     }
 }
 
-// === ARCHIVO: src/main/java/com/pragma/loansystem/LoanEligibilityCalculator.java ===
-package com.pragma.loansystem;
+// === ARCHIVO: src/main/java/com/pragma/bank/BankAccountRepository.java ===
+package com.pragma.bank;
 
-public class LoanEligibilityCalculator {
-    public boolean calculateEligibility(LoanRequest loanRequest) {
-        // Implementar la lógica de cálculo de la elegibilidad del préstamo
-        return false;
-    }
+public interface BankAccountRepository {
+    void openAccount(String accountNumber, String ownerIdentity);
+    void closeAccount(String accountNumber);
+    String getAccountDetails(String accountNumber);
 }
 
-// === ARCHIVO: src/main/java/com/pragma/loansystem/LoanRegistry.java ===
-package com.pragma.loansystem;
+// === ARCHIVO: src/main/java/com/pragma/bank/IdentityValidationService.java ===
+package com.pragma.bank;
 
-public class LoanRegistry {
-    public void registerLoan(LoanRequest loanRequest) {
-        // Implementar la lógica de registro de la solicitud de préstamo en la base de datos
-    }
+public interface IdentityValidationService {
+    boolean validateIdentity(String identity);
 }
 
-// === ARCHIVO: src/test/java/com/pragma/loansystem/LoanApplicationTest.java ===
-package com.pragma.loansystem;
+// === ARCHIVO: src/main/resources/application.yml ===
+server:
+  port: 8080
 
-import org.junit.jupiter.api.Assertions;
+// === ARCHIVO: src/test/java/com/pragma/bank/BankAccountServiceTest.java ===
+package com.pragma.bank;
+
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-public class LoanApplicationTest {
+@SpringBootTest
+class BankAccountServiceTest {
+
+    @Autowired
+    private BankAccountService bankAccountService;
+
+    @MockBean
+    private BankAccountRepository bankAccountRepository;
+
+    @MockBean
+    private IdentityValidationService identityValidationService;
+
     @Test
-    public void testApplyLoan() {
-        LoanApplication loanApplication = new LoanApplication(new LoanValidator(), new LoanEligibilityCalculator(), new LoanRegistry());
-        LoanRequest loanRequest = new LoanRequest();
-        loanApplication.applyLoan(loanRequest);
-        // Agregar asserts para verificar el comportamiento esperado
+    void openAccount_shouldCallRepository() {
+        // Arrange
+        String accountNumber = "123456";
+        String ownerIdentity = "identity123";
+        Mockito.doNothing().when(identityValidationService).validateIdentity(ownerIdentity);
+        Mockito.doNothing().when(bankAccountRepository).openAccount(accountNumber, ownerIdentity);
+
+        // Act
+        bankAccountService.openAccount(accountNumber, ownerIdentity);
+
+        // Assert
+        Mockito.verify(bankAccountRepository).openAccount(accountNumber, ownerIdentity);
     }
 
     @Test
-    public void testApplyLoanWithInvalidData() {
-        LoanApplication loanApplication = new LoanApplication(new LoanValidator(), new LoanEligibilityCalculator(), new LoanRegistry());
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos inválidos
-        loanApplication.applyLoan(loanRequest);
-        // Agregar asserts para verificar el comportamiento esperado
+    void closeAccount_shouldCallRepository() {
+        // Arrange
+        String accountNumber = "123456";
+        Mockito.doNothing().when(bankAccountRepository).closeAccount(accountNumber);
+
+        // Act
+        bankAccountService.closeAccount(accountNumber);
+
+        // Assert
+        Mockito.verify(bankAccountRepository).closeAccount(accountNumber);
     }
 
     @Test
-    public void testApplyLoanWithEligibleData() {
-        LoanApplication loanApplication = new LoanApplication(new LoanValidator(), new LoanEligibilityCalculator(), new LoanRegistry());
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos elegibles
-        loanApplication.applyLoan(loanRequest);
-        // Agregar asserts para verificar el comportamiento esperado
-    }
-}
+    void getAccountDetails_shouldCallRepository() {
+        // Arrange
+        String accountNumber = "123456";
+        String accountDetails = "Account Details";
+        Mockito.when(bankAccountRepository.getAccountDetails(accountNumber)).thenReturn(accountDetails);
 
-// === ARCHIVO: src/test/java/com/pragma/loansystem/LoanValidatorTest.java ===
-package com.pragma.loansystem;
+        // Act
+        String result = bankAccountService.getAccountDetails(accountNumber);
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-public class LoanValidatorTest {
-    @Test
-    public void testValidateWithValidData() {
-        LoanValidator loanValidator = new LoanValidator();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos válidos
-        loanValidator.validate(loanRequest);
-        // Agregar asserts para verificar el comportamiento esperado
-    }
-
-    @Test
-    public void testValidateWithInvalidData() {
-        LoanValidator loanValidator = new LoanValidator();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos inválidos
-        Assertions.assertThrows(IllegalArgumentException.class, () -> loanValidator.validate(loanRequest));
-    }
-
-    @Test
-    public void testValidateWithEmptyData() {
-        LoanValidator loanValidator = new LoanValidator();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos vacíos
-        Assertions.assertThrows(IllegalArgumentException.class, () -> loanValidator.validate(loanRequest));
-    }
-}
-
-// === ARCHIVO: src/test/java/com/pragma/loansystem/LoanEligibilityCalculatorTest.java ===
-package com.pragma.loansystem;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-public class LoanEligibilityCalculatorTest {
-    @Test
-    public void testCalculateEligibilityWithEligibleData() {
-        LoanEligibilityCalculator loanEligibilityCalculator = new LoanEligibilityCalculator();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos elegibles
-        Assertions.assertTrue(loanEligibilityCalculator.calculateEligibility(loanRequest));
-    }
-
-    @Test
-    public void testCalculateEligibilityWithIneligibleData() {
-        LoanEligibilityCalculator loanEligibilityCalculator = new LoanEligibilityCalculator();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos no elegibles
-        Assertions.assertFalse(loanEligibilityCalculator.calculateEligibility(loanRequest));
-    }
-
-    @Test
-    public void testCalculateEligibilityWithEmptyData() {
-        LoanEligibilityCalculator loanEligibilityCalculator = new LoanEligibilityCalculator();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos vacíos
-        Assertions.assertFalse(loanEligibilityCalculator.calculateEligibility(loanRequest));
+        // Assert
+        Mockito.verify(bankAccountRepository).getAccountDetails(accountNumber);
+        org.junit.jupiter.api.Assertions.assertEquals(accountDetails, result);
     }
 }
 
-// === ARCHIVO: src/test/java/com/pragma/loansystem/LoanRegistryTest.java ===
-package com.pragma.loansystem;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-public class LoanRegistryTest {
-    @Test
-    public void testRegisterLoan() {
-        LoanRegistry loanRegistry = new LoanRegistry();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos válidos
-        loanRegistry.registerLoan(loanRequest);
-        // Agregar asserts para verificar el comportamiento esperado
-    }
-
-    @Test
-    public void testRegisterLoanWithDuplicateData() {
-        LoanRegistry loanRegistry = new LoanRegistry();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos duplicados
-        loanRegistry.registerLoan(loanRequest);
-        Assertions.assertThrows(IllegalStateException.class, () -> loanRegistry.registerLoan(loanRequest));
-    }
-
-    @Test
-    public void testRegisterLoanWithEmptyData() {
-        LoanRegistry loanRegistry = new LoanRegistry();
-        LoanRequest loanRequest = new LoanRequest();
-        // Configurar loanRequest con datos vacíos
-        Assertions.assertThrows(IllegalArgumentException.class, () -> loanRegistry.registerLoan(loanRequest));
-    }
-}
-
-// === ARCHIVO: src/main/java/com/pragma/loansystem/LoanRequest.java ===
-package com.pragma.loansystem;
-
-public class LoanRequest {
-    // Atributos y constructores necesarios para la solicitud de préstamo
-}
-
-// === ARCHIVO: pom.xml ===
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.pragma</groupId>
-    <artifactId>loansystem</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-</project>
 ```
